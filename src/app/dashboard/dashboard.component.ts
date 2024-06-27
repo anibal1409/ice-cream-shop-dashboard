@@ -25,7 +25,7 @@ import { optionMenu } from './models';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  title = 'MI PROFE';
+  title = 'Helados Dominic';
 
   optionList: Array<optionMenu> = [];
 
@@ -67,11 +67,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   sub$ = new Subscription();
   user: UserStateVM = {
     email: 'user@user.com',
-    firstName: 'User',
-    lastName: 'User',
+    firstName: 'Administrador',
+    lastName: '',
     id: 0,
     idDocument: '0',
-    name: 'User',
+    name: '',
     role: UserRole.Super,
     loginStamp: 0,
     roleText: 'Super',
@@ -132,7 +132,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.optionList.unshift({
         name: 'Inicio',
         value: 'home',
-        icon: 'home',
+        icon: 'store',
         permissions: [UserRole.Super],
       },);
       this.optionList.push({
@@ -151,7 +151,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else if (option) {
       this.router.navigate([`/dashboard/${option.value}`]);
     } else if (!option) {
-      this.title = 'MI PROFE';
+      this.title = 'Helados Dominic';
     }
   }
 
@@ -160,7 +160,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (item) {
       this.title = item.title;
     } else {
-      this.title = 'MI PROFE';
+      this.title = 'Helados Dominic';
     }
   }
 

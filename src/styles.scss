@@ -153,7 +153,7 @@ $mat-dark-theme-background: (
 // Theme Config
 
 body {
-  --primary-color: #034C8C;
+  --primary-color: #ECF244;
   --primary-lighter-color: #c8daff;
   --primary-darker-color: #2f67ff;
   --text-primary-color: #{$light-primary-text};
@@ -161,10 +161,10 @@ body {
   --text-primary-darker-color: #{$light-primary-text};
 }
 $mat-primary: (
-  main: #034C8C,
+  main: #ECF244,
   lighter: #c7defa,
   darker: #2c75e5,
-  200: #034C8C,
+  200: #ECF244,
   // For slide toggle,
   contrast:
     (
@@ -359,4 +359,8 @@ app-card-subject-schedules.danger > mat-card {
 
 .hidden {
   display: none;
+}
+
+.text-color-primary {
+  color: var(--primary-color);
 }

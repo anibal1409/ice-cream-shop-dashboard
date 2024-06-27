@@ -5,31 +5,37 @@ export const MENU: Array<optionMenu> = [
   {
     name: 'Categorías',
     value: 'exam-types',
-    icon: 'category',
+    icon: 'group_work',
     permissions: [UserRole.Super, UserRole.Manager, UserRole.Bionalist, UserRole.LaboratoryAssistant],
   },
   {
     name: 'Productos',
     value: 'exams',
-    icon: 'dashboard',
+    icon: 'icecream',
+    permissions: [UserRole.Super, UserRole.Manager, UserRole.Bionalist, UserRole.Administrativessistant, UserRole.LaboratoryAssistant],
+  },
+  {
+    name: 'Pedidos',
+    value: 'exams',
+    icon: 'orders',
     permissions: [UserRole.Super, UserRole.Manager, UserRole.Bionalist, UserRole.Administrativessistant, UserRole.LaboratoryAssistant],
   },
   {
     name: 'Ventas',
     value: 'studies',
-    icon: 'shopping_cart',
+    icon: 'receipt_long',
     permissions: [UserRole.Super, UserRole.Manager, UserRole.Bionalist, UserRole.Administrativessistant, UserRole.LaboratoryAssistant],
   },
   {
     name: 'Clientes',
     value: 'patients',
-    icon: 'supervisor_account',
+    icon: 'group',
     permissions: [UserRole.Super, UserRole.Manager, UserRole.Bionalist, UserRole.Administrativessistant, UserRole.LaboratoryAssistant],
   },
   {
     name: 'Estadísticas',
     value: 'statistics',
-    icon: 'bar_chart',
+    icon: 'monitoring',
     permissions: [UserRole.Super, UserRole.Manager, UserRole.Bionalist],
   },
   {
