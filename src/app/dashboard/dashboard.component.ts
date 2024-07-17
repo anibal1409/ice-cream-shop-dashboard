@@ -105,21 +105,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       })
     );
-    // this.user = this.userStateService.getUser() as any;
-    console.log(this.user);
+    this.user = this.userStateService.getUser() as any;
     this.sub$.add(
       this.userStateService.getUser$().subscribe((user) => {
         if (user) {
-          console.log(user);
-          
           this.user = user;
         }
       }
       )
     );
     const role = this.userStateService.getRole();
-    if (role || true) {
-      this.optionList = MENU.filter((item) => (item.permissions.includes(role as any) || true))
+    if (role) {
+      this.optionList = MENU.filter((item) => (item.permissions.includes(role as any)))
       .sort((a, b) => {
         let sort = 0;
         if (a.name > b.name) {
