@@ -12,15 +12,15 @@ export const USER_ROLES = [
     value: UserRole.Super,
   },
   {
-    name: 'Gerente',
+    name: 'Administrador',
     value: UserRole.Manager,
   },
   {
-    name: 'Cajero',
+    name: 'Vendedor',
     value: UserRole.SalesAdvisor,
   },
   {
-    name: 'Jefe de almacén',
+    name: 'Supervisor',
     value: UserRole.WarehouseManager,
   },
 ];
