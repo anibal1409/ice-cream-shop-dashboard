@@ -9,6 +9,10 @@
   }
 }
 
+.mat-toolbar.mat-primary {
+  --mat-toolbar-container-text-color: #110273 !important;
+  color: #110273 !important;
+} 
 
 .buttons-container {
   list-style: none;

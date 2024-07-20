@@ -156,9 +156,9 @@ body {
   --primary-color: #ECF244;
   --primary-lighter-color: #c8daff;
   --primary-darker-color: #2f67ff;
-  --text-primary-color: #{$light-primary-text};
-  --text-primary-lighter-color: #{$dark-primary-text};
-  --text-primary-darker-color: #{$light-primary-text};
+  --text-primary-color: #110273;
+  --text-primary-lighter-color: #110273;
+  --text-primary-darker-color: #110273;
 }
 $mat-primary: (
   main: #ECF244,
@@ -381,4 +381,16 @@ app-card-subject-schedules.danger > mat-card {
   justify-content: center;
   align-items: center;
   padding: 8rem;
+}
+
+.mat-primary:not(:disabled) {
+  color: #110273 !important;
+}
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-floating-label, .mdc-text-field--filled:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-floating-label--float-above {
+  color: #110273 !important;
+}
+
+.mat-mdc-button.mat-primary {
+  // color: #110273 !important;
 }
