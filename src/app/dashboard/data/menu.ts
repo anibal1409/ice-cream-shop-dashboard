@@ -44,4 +44,4 @@ export const MENU: Array<optionMenu> = [
     icon: 'person',
     permissions: [UserRole.Super, UserRole.Manager],
   },
-]
+];

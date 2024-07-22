@@ -393,4 +393,8 @@ app-card-subject-schedules.danger > mat-card {
 
 .recovery-link {
   color: #110273 !important;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
 }

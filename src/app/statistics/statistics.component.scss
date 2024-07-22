@@ -7,5 +7,25 @@
     gap: 1rem;
     flex-wrap: wrap;
   }
+  .card-statistics {
+    color: #110273 !important;
+    mat-card-header {
+      mat-card-title {
+        font-size: 2rem;
+        .button-icon {
+          font-size: 2rem;
+          margin-right: 1rem;
+        }
+      }
+    }
+    mat-card-subtitle {
+      .content-data {
+        color: #110273 !important;
+        font-size: 2rem;
+      }
+      .recovery-link {
+        font-size: 0.75rem;
+      }
+    }
+  }
 }
-
