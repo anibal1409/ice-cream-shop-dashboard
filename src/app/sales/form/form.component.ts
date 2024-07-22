@@ -1,4 +1,3 @@
-else
 import { Location } from '@angular/common';
 import {
   Component,
@@ -38,11 +37,6 @@ import {
   StageSale,
 } from '../models/stage';
 import { SalesService } from '../sales.service';
-
-{
-  this.form.reset();
-  this.clickClosed();
-}
 
 @Component({
   selector: 'app-form',
