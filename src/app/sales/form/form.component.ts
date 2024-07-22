@@ -451,6 +451,9 @@ export class FormComponent implements OnInit, OnDestroy {
       dialogRef.close();
       if (res) {
         this.generateReportSale(true);
+      } else {
+        this.form.reset();
+        this.clickClosed();
       }
     });
   }
