@@ -1,3 +1,4 @@
+else
 import { Location } from '@angular/common';
 import {
   Component,
@@ -37,6 +38,11 @@ import {
   StageSale,
 } from '../models/stage';
 import { SalesService } from '../sales.service';
+
+{
+  this.form.reset();
+  this.clickClosed();
+}
 
 @Component({
   selector: 'app-form',
@@ -344,7 +350,6 @@ export class FormComponent implements OnInit, OnDestroy {
                 this.updateShowPrint(sale.stage);
               }
               this.toastService.success('¡Venta actualizada exitosamente!');
-              this.form.reset();
               if (sale?.stage === StageSale.Paid) {
                 this.showConfirmPrint();
               } else {

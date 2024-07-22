@@ -320,6 +320,7 @@ export class FormComponent implements OnInit, OnDestroy {
               if (sale?.stage) {
                 this.updateShowPrint();
               }
+              this.id = sale?.id || 0;
               this.toastService.success('¡Pedido creado exitosamente!');
               if (sale?.stage === StageOrder.Completed) {
                 this.showConfirmPrint();
