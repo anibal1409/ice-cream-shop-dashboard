@@ -12,6 +12,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import {
   ActivatedRoute,
   Router,
@@ -21,6 +22,7 @@ import { isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
 import { ToastService } from 'toast';
 
+import { ConfirmModalComponent } from '../../common/confirm-modal';
 import {
   CustomCurrencyMaskConfig,
 } from '../../common/currency-mask/mask-config';
@@ -91,6 +93,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastService: ToastService,
     private location: Location,
+    private matDialog: MatDialog,
   ) { }
 
   ngOnDestroy(): void {
@@ -205,29 +208,35 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   private updateProductValue(): void {
-    const stage = this.form.get('stage')?.value;
-    this.hiddenFooter = this.shoHiddenAccept.includes(stage) && this.submitDisabled;
-    this.showDelete = this.showValuesAccept.includes(stage);
-    const disabled = !this.showValuesAccept.includes(stage);
-    const formArray = this.orderProductsArray;
-    for (let i = 0; i < formArray.length; i++) {
-      if (disabled) {
-        formArray.at(i).get('price')?.disable({emitEvent: false});
-        formArray.at(i).get('amount')?.disable({emitEvent: false});
+    if (this.id) {
+      const stage = this.form.get('stage')?.value;
+      this.hiddenFooter = this.shoHiddenAccept.includes(stage) && this.submitDisabled;
+      this.showDelete = this.showValuesAccept.includes(stage);
+      const disabled = !this.showValuesAccept.includes(stage);
+      const formArray = this.orderProductsArray;
+      for (let i = 0; i < formArray.length; i++) {
+        if (disabled) {
+          formArray.at(i).get('price')?.disable({emitEvent: false});
+          formArray.at(i).get('amount')?.disable({emitEvent: false});
+        } else {
+          formArray.at(i).get('price')?.enable({emitEvent: false});
+          formArray.at(i).get('amount')?.enable({emitEvent: false});
+        }
+      }
+      if (!this.showValuesAccept.includes(stage)) {
+        this.form.disable({ emitEvent: false });
+        this.formDisabled = true;
+        if (stage !== StageOrder.Completed || !this.submitDisabled) {
+          this.form.get('stage')?.enable({emitEvent: false});
+        }
       } else {
-        formArray.at(i).get('price')?.enable({emitEvent: false});
-        formArray.at(i).get('amount')?.enable({emitEvent: false});
+        this.form?.get('provider')?.enable({emitEvent: false});
+        this.form?.get('date')?.enable({emitEvent: false});
+        this.form?.get('stage')?.enable({emitEvent: false});
+        this.form?.get('deadline')?.enable({emitEvent: false});
+        this.form?.get('note')?.enable({emitEvent: false});
+        this.formDisabled = false;
       }
-    }
-    if (!this.showValuesAccept.includes(stage)) {
-      this.form.disable({ emitEvent: false });
-      this.formDisabled = true;
-      if (stage !== StageOrder.Completed || !this.submitDisabled) {
-        this.form.get('stage')?.enable({emitEvent: false});
-      }
-    } else {
-      this.form.enable({ emitEvent: false });
-      this.formDisabled = false;
     }
   }
 
@@ -311,9 +320,13 @@ export class FormComponent implements OnInit, OnDestroy {
               if (sale?.stage) {
                 this.updateShowPrint();
               }
-              this.form.reset();
-              this.clickClosed();
               this.toastService.success('¡Pedido creado exitosamente!');
+              if (sale?.stage === StageOrder.Completed) {
+                this.showConfirmPrint();
+              } else {
+                this.form.reset();
+                this.clickClosed();
+              }
             }
           )
       );
@@ -333,9 +346,13 @@ export class FormComponent implements OnInit, OnDestroy {
               if (sale?.stage) {
                 this.updateShowPrint();
               }
-              this.form.reset();
-              this.clickClosed();
               this.toastService.success('¡Pedido actualizado exitosamente!');
+              if (sale?.stage === StageOrder.Completed) {
+                this.showConfirmPrint();
+              } else {
+                this.form.reset();
+                this.clickClosed();
+              }
             }
           )
       );
@@ -373,21 +390,37 @@ export class FormComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
-
-  generateReportSale(): void {
+  generateReportSale(close = false): void {
     this.sub$.add(
-      this.entityService.generateReportOrder$({
-        id: this.id
-      }).subscribe(
+      this.entityService.printSale(this.id).subscribe(
         (report) => {
-          const link = document.createElement('a');
-          link.href = report?.reportUrl;
-          link.target = '_black';
-          link.download = report?.name;
-          link.click();
+          this.entityService.openPDF(report);
+          if (close) {
+            this.form.reset();
+            this.clickClosed();
+          }
         }
       )
     );
+  }
+
+  showConfirmPrint(): void {
+    const dialogRef = this.matDialog.open(ConfirmModalComponent, {
+      data: {
+        message: {
+          title: '¿Desea imprimir el pedido?',
+        },
+      },
+      hasBackdrop: true,
+      disableClose: true,
+    });
+
+    dialogRef.componentInstance.closed.subscribe((res) => {
+      dialogRef.close();
+      if (res) {
+        this.generateReportSale(true);
+      }
+    });
   }
 
 }

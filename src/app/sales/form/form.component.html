@@ -18,6 +18,7 @@
           (keyup.enter)="findPatient()"
         />
         <mat-icon matSuffix (click)="findPatient()">search</mat-icon>
+        <mat-icon matSuffix (click)="addCustomer()">person_add</mat-icon>
         <mat-error *ngIf="form.controls['customerDocument'].hasError('required')"
           >Campo requerido</mat-error
         >

@@ -12,6 +12,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import {
   ActivatedRoute,
   Router,
@@ -21,9 +22,11 @@ import { isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
 import { ToastService } from 'toast';
 
+import { ConfirmModalComponent } from '../../common/confirm-modal';
 import {
   CustomCurrencyMaskConfig,
 } from '../../common/currency-mask/mask-config';
+import { FormComponent as FormComponentCustomer } from '../../customers/form';
 import { ProductItemVM } from '../../products';
 import {
   SaleProduct,
@@ -96,6 +99,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastService: ToastService,
     private location: Location,
+    private matDialog: MatDialog,
   ) { }
 
   ngOnDestroy(): void {
@@ -211,29 +215,33 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   private updateProductValue(): void {
-    const stage = this.form.get('stage')?.value;
-    this.hiddenFooter = this.shoHiddenAccept.includes(stage) && !this.submitDisabled;
-    this.showDelete = this.showValuesAccept.includes(stage);
-    const disabled = !this.showValuesAccept.includes(stage);
-    const formArray = this.saleProductsArray;
-    for (let i = 0; i < formArray.length; i++) {
-      if (disabled) {
-        formArray.at(i).get('amount')?.disable();
+    if (this.id) {
+      const stage = this.form.get('stage')?.value;
+      this.hiddenFooter = this.shoHiddenAccept.includes(stage) && !this.submitDisabled;
+      this.showDelete = this.showValuesAccept.includes(stage);
+      const disabled = !this.showValuesAccept.includes(stage);
+      const formArray = this.saleProductsArray;
+      for (let i = 0; i < formArray.length; i++) {
+        if (disabled) {
+          formArray.at(i).get('amount')?.disable();
+        } else {
+          formArray.at(i).get('amount')?.enable();
+        }
+      }
+      if (!this.showValuesAccept.includes(stage) || (this.showValuesPrint.includes(stage) && this.submitDisabled)) {
+        this.form.disable({ emitEvent: false });
+        this.formDisabled = true;
+        if (!this.submitDisabled) {
+          this.form.get('stage')?.enable({emitEvent: false});
+        }
       } else {
-        formArray.at(i).get('amount')?.enable();
+        this.form?.get('customerDocument')?.enable({emitEvent: false});
+        this.form?.get('date')?.enable({emitEvent: false});
+        this.form?.get('stage')?.enable({emitEvent: false});
+        this.formDisabled = false;
       }
+      this.form.get('customerName')?.disable({ emitEvent: false });
     }
-    if (!this.showValuesAccept.includes(stage) || (this.showValuesPrint.includes(stage) && this.submitDisabled)) {
-      this.form.disable({ emitEvent: false });
-      this.formDisabled = true;
-      if (!this.submitDisabled) {
-        this.form.get('stage')?.enable({emitEvent: false});
-      }
-    } else {
-      this.form.enable({ emitEvent: false });
-      this.formDisabled = false;
-    }
-    this.form.get('customerName')?.disable({ emitEvent: false });
   }
 
   get saleProductsArray() {
@@ -308,9 +316,14 @@ export class FormComponent implements OnInit, OnDestroy {
               if (sale?.stage) {
                 this.updateShowPrint(sale.stage);
               }
-              this.form.reset();
-              this.clickClosed();
+              this.id = sale?.id || 0;
               this.toastService.success('¡Venta creada exitosamente!');
+              if (sale?.stage === StageSale.Paid) {
+                this.showConfirmPrint();
+              } else {
+                this.form.reset();
+                this.clickClosed();
+              }
             }
           )
       );
@@ -330,9 +343,14 @@ export class FormComponent implements OnInit, OnDestroy {
               if (sale?.stage) {
                 this.updateShowPrint(sale.stage);
               }
-              this.form.reset();
-              this.clickClosed();
               this.toastService.success('¡Venta actualizada exitosamente!');
+              this.form.reset();
+              if (sale?.stage === StageSale.Paid) {
+                this.showConfirmPrint();
+              } else {
+                this.form.reset();
+                this.clickClosed();
+              }
             }
           )
       );
@@ -352,11 +370,13 @@ export class FormComponent implements OnInit, OnDestroy {
       this.sub$.add(
         this.entityService.findPatientByDocument$(customerDocument).subscribe(
           (customer) => {
-            if (customer?.id) {
+            if (customer && customer?.id) {
               this.form.patchValue({
                 customerId: customer.id,
                 customerName: customer.name,
               });
+            } else {
+              this.toastService.error('Cliente no encontrado.');
             }
           }
         )
@@ -391,23 +411,48 @@ export class FormComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
-
-  generateReportSale(): void {
+  generateReportSale(close = false): void {
     this.sub$.add(
-      this.entityService.generateReportSale({
-        id: this.id
-      }).subscribe(
+      this.entityService.printSale(this.id).subscribe(
         (report) => {
-          console.log(report);
-          const link = document.createElement('a');
-          link.href = report?.reportUrl;
-          link.target = '_black';
-          link.download = report?.name;
-          link.click();
-          
+          this.entityService.openPDF(report);
+          if (close) {
+            this.form.reset();
+            this.clickClosed();
+          }
         }
       )
     );
+  }
+
+  addCustomer(): void {
+    const modal = this.matDialog.open(FormComponentCustomer, {
+      hasBackdrop: true,
+      disableClose: true,
+      data: {},
+    });
+    modal.componentInstance.closed.subscribe(() => {
+      modal.close();
+    });
+  }
+
+  showConfirmPrint(): void {
+    const dialogRef = this.matDialog.open(ConfirmModalComponent, {
+      data: {
+        message: {
+          title: '¿Desea imprimir el comprobante?',
+        },
+      },
+      hasBackdrop: true,
+      disableClose: true,
+    });
+
+    dialogRef.componentInstance.closed.subscribe((res) => {
+      dialogRef.close();
+      if (res) {
+        this.generateReportSale(true);
+      }
+    });
   }
 
 }
